@@ -8,9 +8,10 @@ Batchsize : Set to 1 ( my PC only has 8GB RAM , multiple batchsize does not run 
 
 
 Command to train the model
-
+-------------------------
 python3 trainEnet.py
 
 Command to test the model
-
+-------------------------
 python3 predict.py
+
