@@ -4,7 +4,7 @@ This code is inspired from paper "ENet: A Deep Neural Network Architecture for R
 
 Dataset : CamVid Dataset
 Library : Keras with Tensorflow as Backend
-Batchsize : Set to 1 ( my PC only has 8GB RAM , multiple batchsize does not run in my current PC settings)
+Batchsize :  Standard Batchsize is 10, Set to 1 ( my PC  has 8GB RAM , multiple batchsize does not run in my current PC settings)
 
 
 Command to train the model
