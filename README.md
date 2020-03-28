@@ -22,5 +22,6 @@ trained Data saved as ENet.h5
 Command to test the model
 -------------------------
 python3 predict.py
+
 Prediction on CamVid standard video
 
