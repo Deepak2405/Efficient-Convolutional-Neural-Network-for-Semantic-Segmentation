@@ -53,7 +53,7 @@ def main():
     model = EfficientConvNet(totalClass)
     
     
-    model.compile(loss="categorical_crossentropy", optimizer='adadelta', metrics=["accuracy"])
+    model.compile(loss="categorical_crossentropy", optimizer='adam'(lr=5e-4), metrics=["accuracy"])
     H=model.fit_generator(trainAug.flow(trainX, trainY, batch_size=1),steps_per_epoch=len(trainX),  validation_data=(testX, testY),  epochs=100)
 
     model.save('Enet.h5')
