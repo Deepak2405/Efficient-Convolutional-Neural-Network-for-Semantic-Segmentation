@@ -8,10 +8,10 @@ from keras.engine.topology import Input
 from keras.models import Model
 
 
-def decodeNeck(encoder, output, upsample=False, reverse_module=False):
+def decodeNeck(encodeData, output, upsample=False, reverse_module=False):
 	internal = output // 4
 
-	x = Conv2D(internal, (1, 1), use_bias=False)(encoder)
+	x = Conv2D(internal, (1, 1), use_bias=False)(encodeData)
 	x = BatchNormalization(momentum=0.1)(x)
 	x = Activation('relu')(x)
 	if not upsample:
@@ -23,26 +23,26 @@ def decodeNeck(encoder, output, upsample=False, reverse_module=False):
 
 	x = Conv2D(output, (1, 1), padding='same', use_bias=False)(x)
 
-	other = encoder
-	if encoder.get_shape()[-1] != output or upsample:
-		other = Conv2D(output, (1, 1), padding='same', use_bias=False)(other)
-		other = BatchNormalization(momentum=0.1)(other)
+	prevData = encodeData
+	if encodeData.get_shape()[-1] != output or upsample:
+		prevData = Conv2D(output, (1, 1), padding='same', use_bias=False)(prevData)
+		prevData = BatchNormalization(momentum=0.1)(prevData)
 		if upsample and reverse_module is not False:
-			other = UpSampling2D(size=(2, 2))(other)
+			prevData = UpSampling2D(size=(2, 2))(prevData)
 
 	if upsample and reverse_module is False:
-		decoder = x
+		decodeData = x
 	else:
 		x = BatchNormalization(momentum=0.1)(x)
-		decoder = add([x, other])
-		decoder = Activation('relu')(decoder)
+		decodeData = add([x, prevData])
+		decodeData = Activation('relu')(decodeData)
 
-	return decoder
+	return decodeData
 '''
 The decoder with Stage 4 has 3 bottlenecks and Stage 5 has 2 bottlenecks
 '''
-def decoder(encoder, nc):
-	Effnet = decodeNeck(encoder, 64, upsample=True, reverse_module=True)  # bottleneck 4.0
+def decoder(encodeData, nc):
+	Effnet = decodeNeck(encodeData, 64, upsample=True, reverse_module=True)  # bottleneck 4.0
 	Effnet = decodeNeck(Effnet, 64)  # bottleneck 4.1
 	Effnet = decodeNeck(Effnet, 64)  # bottleneck 4.2
 	Effnet = decodeNeck(Effnet, 16, upsample=True, reverse_module=True)  # bottleneck 5.0
