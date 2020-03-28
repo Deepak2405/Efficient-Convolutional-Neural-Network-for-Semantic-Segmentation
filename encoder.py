@@ -25,44 +25,44 @@ In between these convolutions, a regular , dilated or full convolution takes pla
 '''
 def bottleneck(inputData, output, internal_scale=4, asymmetric=0, dilated=0, downsample=False, dropout_rate=0.1):
 	internal = output // internal_scale
-	encoder = inputData
+	encodeData = inputData
 	if downsample:
 		input_stride = 2
 	else:
 		input_stride=1 
-	encoder = Conv2D(internal, (input_stride, input_stride),
+	encodeData = Conv2D(internal, (input_stride, input_stride),
 					 strides=(input_stride, input_stride), use_bias=False)(encoder)
-	encoder = BatchNormalization(momentum=0.1)(encoder)  # enet uses momentum of 0.1, keras default is 0.99
-	encoder = PReLU(shared_axes=[1, 2])(encoder)
+	encodeData = BatchNormalization(momentum=0.1)(encodeData)  
+	encodeData = PReLU(shared_axes=[1, 2])(encodeData)
 	if not asymmetric and not dilated:
-		encoder = Conv2D(internal, (3, 3), padding='same')(encoder)
+		encodeData = Conv2D(internal, (3, 3), padding='same')(encodeData)
 	elif asymmetric:
-		encoder = Conv2D(internal, (1, asymmetric), padding='same', use_bias=False)(encoder)
-		encoder = Conv2D(internal, (asymmetric, 1), padding='same')(encoder)
+		encodeData = Conv2D(internal, (1, asymmetric), padding='same', use_bias=False)(encodeData)
+		encodeData = Conv2D(internal, (asymmetric, 1), padding='same')(encodeData)
 	else :
-		encoder = Conv2D(internal, (3, 3), dilation_rate=(dilated, dilated), padding='same')(encoder)
+		encodeData = Conv2D(internal, (3, 3), dilation_rate=(dilated, dilated), padding='same')(encodeData)
 	
 
-	encoder = BatchNormalization(momentum=0.1)(encoder)  
-	encoder = PReLU(shared_axes=[1, 2])(encoder)
-	encoder = Conv2D(output, (1, 1), use_bias=False)(encoder)
-	encoder = BatchNormalization(momentum=0.1)(encoder) 
-	encoder = SpatialDropout2D(dropout_rate)(encoder)
-	other = inputData
+	encodeData = BatchNormalization(momentum=0.1)(encodeData)  
+	encodeData = PReLU(shared_axes=[1, 2])(encodeData)
+	encodeData = Conv2D(output, (1, 1), use_bias=False)(encodeData)
+	encodeData = BatchNormalization(momentum=0.1)(encodeData) 
+	encodeData = SpatialDropout2D(dropout_rate)(encodeData)
+	prevData = inputData
 	if downsample:
-		other = MaxPooling2D()(other)
+		prevData = MaxPooling2D()(prevData)
 
-		other = Permute((1, 3, 2))(other)
-		pad_feature_maps = output - inputData.get_shape().as_list()[3]
+		prevData = Permute((1, 3, 2))(prevData)
+		pad_feature_maps = prevData - inputData.get_shape().as_list()[3]
 		tb_pad = (0, 0)
 		lr_pad = (0, pad_feature_maps)
-		other = ZeroPadding2D(padding=(tb_pad, lr_pad))(other)
-		other = Permute((1, 3, 2))(other)
+		prevData = ZeroPadding2D(padding=(tb_pad, lr_pad))(other)
+		prevData = Permute((1, 3, 2))(other)
 
-	encoder = add([encoder, other])
-	encoder = PReLU(shared_axes=[1, 2])(encoder)
+	encodeData = add([encodeData, prevData])
+	encodeData = PReLU(shared_axes=[1, 2])(encodeData)
 
-	return encoder
+	return encodeData
 
 '''
 The encoder has three stages each consisting  of 5 bottleneck blocks . 
