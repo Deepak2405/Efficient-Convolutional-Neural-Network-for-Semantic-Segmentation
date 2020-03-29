@@ -9,7 +9,7 @@ from keras.models import Model
 
 '''
 The input image has a resolution of 480 x 360 x3 .
-The output size of the initial block of 16 x 256 x 256 by concatenating of the convolution (13 filters) and MaxPooling (2 x 2; without overlap)
+The output size of the initial block of 16 x 256 x 256 by concatenating of the convolution with 13 filters and 2 x 2 MaxPooling without overlap)
 '''
 def initial_block(inputData, filterSize=13, nb_row=3, nb_col=3, strides=(2, 2)):
 	conv = Conv2D(filterSize, (nb_row, nb_col), padding='same', strides=strides)(inputData)
@@ -76,7 +76,6 @@ def encoder(inp, dropout_rate=0.01):
         Effnet = bottleneck(Effnet, 64, dropout_rate=dropout_rate)  # bottleneck 1.i
 
     Effnet = bottleneck(Effnet, 128, downsample=True)  # bottleneck 2.0
-    # bottleneck 2.x and 3.x
     for _ in range(2):
         Effnet = bottleneck(Effnet, 128)             # bottleneck 2.1
         Effnet = bottleneck(Effnet, 128, dilated=2)  # bottleneck 2.2
