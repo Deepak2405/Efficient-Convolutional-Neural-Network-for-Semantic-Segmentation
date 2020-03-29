@@ -5,7 +5,6 @@ ENet uses the principle of ResNet archietecture by having 1x1 bottleneck convolu
 The database for training used is CamVid. All the frames are resized to 480x360x3 and total classes are 12.
 '''
 from keras.layers.core import Activation, Reshape
-from keras.layers.normalization import BatchNormalization
 from keras.engine.topology import Input
 from keras.models import Model
 from encoder import initial_block,bottleneck,encoder
