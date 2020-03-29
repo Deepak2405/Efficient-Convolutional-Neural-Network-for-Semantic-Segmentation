@@ -1,12 +1,11 @@
 '''
-Code for designing efficient convolutional neural network
+Code for designing efficient convolutional neural network for semantic segmentation.
+Keras library is used for designing this CNN.
+ENet uses the principle of ResNet archietecture by having 1x1 bottleneck convolution at both encoder and decoder side.
+The database for training used is CamVid. All the frames are resized to 480x360x3 and total classes are 12.
 '''
-from keras.layers.core import Activation,SpatialDropout2D, Permute,  Reshape
-from keras.layers.merge import add, concatenate
-from keras.layers.advanced_activations import PReLU
-from keras.layers.convolutional import Conv2D, Conv2DTranspose, UpSampling2D, ZeroPadding2D
+from keras.layers.core import Activation, Reshape
 from keras.layers.normalization import BatchNormalization
-from keras.layers.pooling import MaxPooling2D
 from keras.engine.topology import Input
 from keras.models import Model
 from encoder import initial_block,bottleneck,encoder
